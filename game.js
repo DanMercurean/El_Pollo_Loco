@@ -2,18 +2,18 @@
 let canvas;
 let ctx;
 let character_x = 100;
-let character_y = 5;
+let character_y = 150;
 let isMovingRight = false;
 let isMovingLeft = false;
 let bg_elements = 0;
 let lastJumpStarted = 0;
-let currentCharacterImage = 'Mexicano - Sprites/2.Secuencias_Personaje-Pepe-correcci+-n/1.IDLE/IDLE/I-1.png';
+let currentCharacterImage = './img/pepe/I-1.png';
 
 // -------- Game config 
 let JUMP_TIME = 300; // in ms
 let GAME_SPEED = 7;
 
-let imagePaths = ['Mexicano - Sprites/2.Secuencias_Personaje-Pepe-correcci+-n/1.IDLE/IDLE/I-1.png', 'grafiken/img/bg_elem_1.png', 'grafiken/img/bg_elem_2.png'];
+let imagePaths = ['./img/pepe/I-1.png', 'grafiken/img/bg_elem_1.png', 'grafiken/img/bg_elem_2.png'];
 
 /**
 * Preload all images. This function should be executed before starting the game.
@@ -58,14 +58,22 @@ function init() {
 function checkForRunning() {
     setInterval( function() {
         if(isMovingRight) {
-            if(currentCharacterImage == 'Mexicano - Sprites/2.Secuencias_Personaje-Pepe-correcci+-n/1.IDLE/IDLE/I-1.png') {
-                currentCharacterImage = 'Mexicano - Sprites/2.Secuencias_Personaje-Pepe-correcci+-n/2.Secuencia_caminata/W-21.png';
+            if(currentCharacterImage == './img/pepe/I-1.png') {
+                currentCharacterImage = './img/pepe/W-21.png';
             } else {
-                currentCharacterImage == 'Mexicano - Sprites/2.Secuencias_Personaje-Pepe-correcci+-n/1.IDLE/IDLE/I-1.png';
+                currentCharacterImage = './img/pepe/I-1.png';
             }
             //Change graphic 
         }
-    
+
+        if(isMovingLeft) {
+            if(currentCharacterImage == './img/pepe/IL-1.png') {
+                currentCharacterImage = './img/pepe/WL-21.png';
+            } else {
+                currentCharacterImage = './img/pepe/IL-1.png';
+            }
+            //Change graphic 
+        }
         // MovingLeft;
     }, 200);
 }
@@ -85,13 +93,13 @@ function updateCharacter() {
         character_y = character_y - 10;
     } else {
         // Check falling 
-        if (character_y < 5) {
+        if (character_y < 150) {
             character_y = character_y + 10;
         }
     }
 
     if (base_image.complete) {
-        ctx.drawImage(base_image, character_x, character_y, base_image.width * 0.35, base_image.height * 0.35);
+        ctx.drawImage(base_image, character_x, character_y, base_image.width * 0.20, base_image.height * 0.20);
     };
 }
 
