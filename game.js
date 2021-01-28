@@ -1,17 +1,19 @@
 // General variables
 let canvas;
 let ctx;
-let character_x = 0;
-let character_y = 250;
+let character_x = 100;
+let character_y = 5;
 let isMovingRight = false;
 let isMovingLeft = false;
 let bg_elements = 0;
 let lastJumpStarted = 0;
+let currentCharacterImage = 'Mexicano - Sprites/2.Secuencias_Personaje-Pepe-correcci+-n/1.IDLE/IDLE/I-1.png';
 
 // -------- Game config 
 let JUMP_TIME = 300; // in ms
+let GAME_SPEED = 7;
 
-let imagePaths = ['grafiken/img/charakter_1.png', 'grafiken/img/bg_elem_1.png', 'grafiken/img/bg_elem_2.png'];
+let imagePaths = ['Mexicano - Sprites/2.Secuencias_Personaje-Pepe-correcci+-n/1.IDLE/IDLE/I-1.png', 'grafiken/img/bg_elem_1.png', 'grafiken/img/bg_elem_2.png'];
 
 /**
 * Preload all images. This function should be executed before starting the game.
@@ -48,8 +50,24 @@ function checkBackgroundImageCache(src_path) {
 function init() {
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext("2d");
+    checkForRunning();
     draw();
     listenForKeys();
+}
+
+function checkForRunning() {
+    setInterval( function() {
+        if(isMovingRight) {
+            if(currentCharacterImage == 'Mexicano - Sprites/2.Secuencias_Personaje-Pepe-correcci+-n/1.IDLE/IDLE/I-1.png') {
+                currentCharacterImage = 'Mexicano - Sprites/2.Secuencias_Personaje-Pepe-correcci+-n/2.Secuencia_caminata/W-21.png';
+            } else {
+                currentCharacterImage == 'Mexicano - Sprites/2.Secuencias_Personaje-Pepe-correcci+-n/1.IDLE/IDLE/I-1.png';
+            }
+            //Change graphic 
+        }
+    
+        // MovingLeft;
+    }, 200);
 }
 
 function draw() {
@@ -60,14 +78,14 @@ function draw() {
 
 function updateCharacter() {
     let base_image = new Image();
-    base_image.src = 'grafiken/img/charakter_1.png';
+    base_image.src = currentCharacterImage;
 
     let timePassedSinceJump = new Date().getTime() - lastJumpStarted;
     if (timePassedSinceJump < JUMP_TIME) {
         character_y = character_y - 10;
     } else {
         // Check falling 
-        if (character_y < 250) {
+        if (character_y < 5) {
             character_y = character_y + 10;
         }
     }
@@ -85,14 +103,12 @@ function drawBackground() {
 }
 
 function drawGround() {
-   
-
     if (isMovingRight) {
-        bg_elements = bg_elements - 2;
+        bg_elements = bg_elements - GAME_SPEED;
     }
 
     if (isMovingLeft) {
-        bg_elements = bg_elements + 2;
+        bg_elements = bg_elements + GAME_SPEED;
     }
 
     addBackgroundObject('grafiken/img/bg_elem_1.png', 0, 195, 0.6, 0.4);
@@ -100,9 +116,14 @@ function drawGround() {
     addBackgroundObject('grafiken/img/bg_elem_1.png', 700, 255, 0.4, 0.6);
     addBackgroundObject('grafiken/img/bg_elem_2.png', 1100, 260, 0.3, 0.2);
 
-     // Draw ground
-     ctx.fillStyle = "#FFE699";
-     ctx.fillRect(0, 375, canvas.width, canvas.height - 375);
+    addBackgroundObject('grafiken/img/bg_elem_1.png', 1300, 195, 0.6, 0.4);
+    addBackgroundObject('grafiken/img/bg_elem_2.png', 1450, 120, 0.6, 0.5);
+    addBackgroundObject('grafiken/img/bg_elem_1.png', 1700, 255, 0.4, 0.6);
+    addBackgroundObject('grafiken/img/bg_elem_2.png', 2000, 260, 0.3, 0.2);
+
+    // Draw ground
+    ctx.fillStyle = "#FFE699";
+    ctx.fillRect(0, 375, canvas.width, canvas.height - 375);
 }
 
 function addBackgroundObject(src, offsetX, offsetY, scale, opacity) {
@@ -127,11 +148,11 @@ function listenForKeys() {
         const k = e.key;
         if (k == 'ArrowRight') {
             isMovingRight = true;
-            character_x = character_x + 5;
+            // character_x = character_x + 5;
         }
         if (k == 'ArrowLeft') {
             isMovingLeft = true;
-            character_x = character_x - 5;
+            //character_x = character_x - 5;
         }
 
         let timePassedSinceJump = new Date().getTime() - lastJumpStarted;
@@ -145,12 +166,12 @@ function listenForKeys() {
         const k = e.key;
         if (k == 'ArrowRight') {
             isMovingRight = false;
-            character_x = character_x + 5;
+            //   character_x = character_x + 5;
         }
 
         if (k == 'ArrowLeft') {
             isMovingLeft = false;
-            character_x = character_x - 5;
+            // character_x = character_x - 5;
         }
 
         //if (e.code == 'Space') {
