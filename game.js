@@ -8,6 +8,10 @@ let isMovingLeft = false;
 let bg_elements = 0;
 let lastJumpStarted = 0;
 let currentCharacterImage = './img/pepe/I-1.png';
+let characterGraphicsRight = ['./img/pepe/W-21.png', './img/pepe/W-22.png', './img/pepe/W-23.png', './img/pepe/W-24.png', './img/pepe/W-25.png', './img/pepe/W-26.png'];
+let characterGraphicsLeft = ['./img/pepe/WL-21.png', './img/pepe/WL-22.png', './img/pepe/WL-23.png', './img/pepe/WL-24.png', './img/pepe/WL-25.png', './img/pepe/WL-26.png'];
+let characterGraphicIndex = 0;
+let cloudOffset = 0;
 
 // -------- Game config 
 let JUMP_TIME = 300; // in ms
@@ -52,36 +56,60 @@ function init() {
     ctx = canvas.getContext("2d");
     checkForRunning();
     draw();
+    calculateCloudOffset();
     listenForKeys();
 }
 
+function calculateCloudOffset() {
+    setInterval(function () {
+        cloudOffset = cloudOffset + 0.25;
+    }, 50);
+}
+
 function checkForRunning() {
-    setInterval( function() {
-        if(isMovingRight) {
-            if(currentCharacterImage == './img/pepe/I-1.png') {
-                currentCharacterImage = './img/pepe/W-21.png';
-            } else {
-                currentCharacterImage = './img/pepe/I-1.png';
-            }
-            //Change graphic 
+    setInterval(function () {
+        if (isMovingRight) {
+            let index = characterGraphicIndex % characterGraphicsRight.length
+            currentCharacterImage = characterGraphicsRight[index];
+            characterGraphicIndex = characterGraphicIndex + 1;
         }
 
-        if(isMovingLeft) {
-            if(currentCharacterImage == './img/pepe/IL-1.png') {
-                currentCharacterImage = './img/pepe/WL-21.png';
-            } else {
-                currentCharacterImage = './img/pepe/IL-1.png';
-            }
-            //Change graphic 
+        if (isMovingLeft) {
+            let index = characterGraphicIndex % characterGraphicsLeft.length
+            currentCharacterImage = characterGraphicsLeft[index];
+            characterGraphicIndex = characterGraphicIndex + 1;
         }
         // MovingLeft;
-    }, 200);
+    }, 100);
 }
 
 function draw() {
     drawBackground();
     updateCharacter();
+    drawChicken();
     requestAnimationFrame(draw);
+}
+
+function drawChicken() {
+    let chickens = [
+        createChicken(1, 300),
+        createChicken(2, 400),
+        createChicken(1, 500)
+    ];
+
+    for (i = 0; i < chickens.length; i = i + 1) {
+        let chicken = chickens[i];
+        addBackgroundObject(chicken.img, chicken.position_x, chicken.position_y, chicken.scale, 1);
+    }
+}
+
+function createChicken(type, position_x) {
+    return {
+        "img": "img/enemy/chicken" + type + ".png",
+        "position_x": position_x,
+        "position_y": 322,
+        "scale": 0.3,
+    };
 }
 
 function updateCharacter() {
@@ -106,8 +134,13 @@ function updateCharacter() {
 function drawBackground() {
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
     drawGround();
+
+    //Draw clouds
+    addBackgroundObject('./img/background/cloud1.png', 200 - cloudOffset, 20, 0.4, 1);
+    addBackgroundObject('./img/background/cloud2.png', 1500 - cloudOffset, 10, 0.4, 1);
+    addBackgroundObject('./img/background/cloud1.png', 2200 - cloudOffset, 20, 0.4, 1);
+    addBackgroundObject('./img/background/cloud2.png', 3000 - cloudOffset, 10, 0.4, 1);
 }
 
 function drawGround() {
@@ -132,6 +165,10 @@ function drawGround() {
     // Draw ground
     ctx.fillStyle = "#FFE699";
     ctx.fillRect(0, 375, canvas.width, canvas.height - 375);
+
+    for (let i = -1; i < 10; i++) {
+        addBackgroundObject('./img/background/ground1.png', i * (canvas.width + 1392), -125, 0.55, 0.9);
+    }
 }
 
 function addBackgroundObject(src, offsetX, offsetY, scale, opacity) {
