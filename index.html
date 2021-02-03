@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>El Pollo Loco</title>
     <link rel="stylesheet" href="style.css">
+    <script src="preload.js"></script>
     <script src="game.js"></script>
 </head>
 
@@ -16,10 +17,13 @@
     </header>
 
     <!-- Canvas Box -->
-    <div>
+    <div class="canvas_container" id="canvasContainer">
         <canvas id="canvas" width="720" height="480"></canvas>
     </div>
 
+    <!--Navigate panel-->
+    <h3 class="navigate_panel">Arrows Left & Right = Walk | Spacebar = Jump | D = Throw Tabasco | M = Music On & Off | R = Restart</h3>
+        
 </body>
 
 </html>

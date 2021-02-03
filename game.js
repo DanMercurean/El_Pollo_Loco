@@ -13,6 +13,26 @@ let currentCharacterImage = './img/pepe/I-1.png';
 let characterGraphicsRight = ['./img/pepe/W-21.png', './img/pepe/W-22.png', './img/pepe/W-23.png', './img/pepe/W-24.png', './img/pepe/W-25.png', './img/pepe/W-26.png'];
 let characterGraphicsLeft = ['./img/pepe/WL-21.png', './img/pepe/WL-22.png', './img/pepe/WL-23.png', './img/pepe/WL-24.png', './img/pepe/WL-25.png', './img/pepe/WL-26.png'];
 let characterGraphicIndex = 0;
+let bossImage = './img/boss/G5.png';
+let bossAlertGraphics = ['./img/boss/G5.png', './img/boss/G6.png', './img/boss/G7.png', './img/boss/G8.png', './img/boss/G9.png', './img/boss/G10.png', './img/boss/G11.png', './img/boss/G12.png'];
+let bossWalkLeftGraphics = ['./img/boss/G1.png', './img/boss/G2.png', './img/boss/G3.png', './img/boss/G4.png'];
+let bossWalkRightGraphics = ['./img/boss/GR1.png', './img/boss/GR2.png', './img/boss/GR3.png', './img/boss/GR4.png'];
+let bossAttackLeftGraphics = ['./img/boss/G13.png', './img/boss/G14.png', './img/boss/G15.png', './img/boss/G16.png', './img/boss/G17.png', './img/boss/G18.png', './img/boss/G19.png', './img/boss/G20.png'];
+let bossAttackRightGraphics = ['./img/boss/GR13.png', './img/boss/GR14.png', './img/boss/GR15.png', './img/boss/GR16.png', './img/boss/GR17.png', './img/boss/GR18.png', './img/boss/GR19.png', './img/boss/GR20.png'];
+let bossHurtLeftGraphics = ['./img/boss/G21.png', './img/boss/G22.png', './img/boss/G23.png', './img/boss/G21.png', './img/boss/G22.png', './img/boss/G23.png'];
+let bossHurtRightGraphics = ['./img/boss/GR21.png', './img/boss/GR22.png', './img/boss/GR23.png', './img/boss/GR21.png', './img/boss/GR22.png', './img/boss/GR23.png'];
+let bossDeadLeftGraphics = ['./img/boss/G24.png', './img/boss/G25.png', './img/boss/G26.png'];
+let bossDeadRightGraphics = ['./img/boss/GR24.png', './img/boss/GR25.png', './img/boss/GR26.png'];
+let bossEnergyGraphics = ['./img/bars/bossenergy1.png', './img/bars/bossenergy2.png', './img/bars/bossenergy3.png', './img/bars/bossenergy4.png', './img/bars/bossenergy5.png', './img/bars/bossenergy6.png'];
+let currentBossEnergyImage = './Mexicano - Sprites/7.Marcadores/Marcadorvida_enemy/Naranja.png';
+let bossGraphicIndex = 0;
+let bossIsFacingRight = false;
+let bossIsFacingLeft = true;
+let bossIsWalking = false;
+let bossIsAlerted = true;
+let bossIsAttacking = false;
+let bossIsHurt = false;
+let bossIsDead = false;
 let cloudOffset = 0;
 let chickens = [];
 let placedBottles = [500, 1000, 1700, 2500, 2800, 3000, 3300];
@@ -23,6 +43,21 @@ let thrownBottleY = 0;
 let bossDefeatedAt = 0;
 let game_finished = false;
 let character_lost_at = 0;
+let coinGraphics = ['./img/coins/Moneda1.png', './img/coins/Moneda2.png'];
+let currentCoinImage = './img/coins/Moneda1.png';
+let coinGraphicIndex = 0;
+let placedCoins = [];
+let collectedCoins = 0;
+let lastKeyPressed = 0;
+let characterGraphicsSleepRight = ['./img/pepe/I-11.png', './img/pepe/I-12.png', './img/pepe/I-13.png',
+    './img/pepe/I-14.png', './img/pepe/I-15.png', './img/pepe/I-16.png', './img/pepe/I-17.png',
+    './img/pepe/I-18.png', './img/pepe/I-19.png', './img/pepe/I-20.png'];
+let characterGraphicsSleepLeft = ['./img/pepe/IL-11.png', './img/pepe/IL-12.png', './img/pepe/IL-13.png',
+    './img/pepe/IL-14.png', './img/pepe/IL-15.png', './img/pepe/IL-16.png', './img/pepe/IL-17.png',
+    './img/pepe/IL-18.png', './img/pepe/IL-19.png', './img/pepe/IL-20.png'];
+let isFacingRight = true;
+let isFacingLeft = false;
+let sleeping = false;
 
 // -------- Game config 
 let JUMP_TIME = 300; // in ms
@@ -31,60 +66,38 @@ let BOSS_POSITION = 5000;
 let AUDIO_RUNNING = new Audio('audio/running.mp3');
 let AUDIO_JUMP = new Audio('audio/jump.mp3');
 let AUDIO_BOTTLE = new Audio('audio/bottle.mp3');
+let AUDIO_COIN = new Audio('audio/coin.mp3');
 let AUDIO_THROW = new Audio('audio/throw.mp3');
 let AUDIO_CHICKEN = new Audio('audio/chicken.mp3');
 let AUDIO_GLASS = new Audio('audio/glass.mp3');
-let AUDIO_BACKGROUND_MUSIC = new Audio('audio/music.mp3');
 let AUDIO_WIN = new Audio('audio/win.mp3');
+let AUDIO_BACKGROUND_MUSIC = new Audio('audio/music.mp3');
 AUDIO_BACKGROUND_MUSIC.loop = true;
 AUDIO_BACKGROUND_MUSIC.volume = 0.2;
 
-let imagePaths = ['./img/pepe/I-1.png', 'grafiken/img/bg_elem_1.png', 'grafiken/img/bg_elem_2.png'];
-
-/**
-* Preload all images. This function should be executed before starting the game.
-* imagePaths should contain all images that will be loaded: ['img/image1.png', 'img/image2.png', 'img/image3.png', ...]
-*/
-function preloadImages() {
-    for (let i = 0; i < imagePaths.length; i++) {
-        let image = new Image();
-        image.src = imagePaths[i];
-        images.push(image); // push image-path to images-array (which contains all image-paths)
-    }
-}
-
-/**
-* Check if background-image is already loaded in cache; if not, create new image 
-* @param {string} src_path - scr-path of background-image  
-*/
-function checkBackgroundImageCache(src_path) {
-    // Check if image is found in images-array.
-    base_image = images.find(function (img) {
-        return img.src.endsWith(src_path.substring(src_path, src_path.length));
-    })
-
-    // Create new image if not found in cache
-    if (!base_image) {
-        base_image = new Image();
-        base_image.src = src_path;
-    }
-}
 
 /**
  * This function defines the canvas from the html tag and creates a context for drawing
  */
 function init() {
+    preloadImages();
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext("2d");
     createChickenList();
+    createCoinList();
+    checkForSleep();
     checkForRunning();
     draw();
     calculateCloudOffset();
     listenForKeys();
     calculateChickenPosition();
     checkForCollision();
+    lastKeyPressed = new Date().getTime();
 }
 
+/**
+ * This function checks for collision of the characters.
+ */
 function checkForCollision() {
     setInterval(function () {
 
@@ -95,13 +108,13 @@ function checkForCollision() {
 
             if ((chicken_x - 40) < character_x && (chicken_x + 40) > character_x) {
                 if (character_y > 150) {
-                    if(character_energy > 0) {
+                    if (character_energy > 0) {
                         character_energy -= 10;
                     } else {
                         character_lost_at = new Date().getTime();
                         game_finished = true;
                     }
-                    
+
                 }
             }
         }
@@ -118,6 +131,20 @@ function checkForCollision() {
             }
         }
 
+        // Check coins
+
+        for (let i = 0; i < placedCoins.length; i++) {
+            let coin_x = placedCoins[i]['position_x'] + bg_elements;
+            let coin_y = placedCoins[i]['position_y'];
+            if ((coin_x - 40) < character_x && (coin_x + 40) > character_x) {
+                if ((character_y + 150) > coin_y && character_y < (coin_y + 20)) {
+                    placedCoins.splice(i, 1);
+                    AUDIO_COIN.play();
+                    collectedCoins++;
+                }
+            }
+        }
+
         // Check final Boss 
         if (thrownBottleX > BOSS_POSITION + bg_elements - 100 && thrownBottleX < BOSS_POSITION + bg_elements + 100) {
             if (final_boss_energy > 0) {
@@ -128,7 +155,6 @@ function checkForCollision() {
                 finishLevel();
             }
         }
-
     }, 100);
 }
 
@@ -171,9 +197,41 @@ function calculateCloudOffset() {
     }, 50);
 }
 
+/**
+ * This function checks for the current image if the character is sleeping.
+ */
+function checkForSleep() {
+    setInterval(function () {
+
+        let timePassed = (new Date().getTime() - lastKeyPressed);
+
+        if (lastKeyPressed != 0 && timePassed > 3000) {
+            sleeping = true;
+            if (isFacingRight) {
+                let index = characterGraphicIndex % characterGraphicsSleepRight.length;
+                currentCharacterImage = characterGraphicsSleepRight[index];
+                characterGraphicIndex = characterGraphicIndex + 1;
+            } else if (isFacingLeft) {
+                let index = characterGraphicIndex % characterGraphicsSleepLeft.length;
+                currentCharacterImage = characterGraphicsSleepLeft[index];
+                characterGraphicIndex = characterGraphicIndex + 1;
+            }
+        } else {
+            sleeping = false;
+        }
+
+    }, 200);
+}
+
+/**
+ * This function is checking for the current image if the character is running.
+ */
 function checkForRunning() {
     setInterval(function () {
         if (isMovingRight) {
+            isFacingRight = true;
+            isFacingLeft = false;
+            sleeping = false;
             AUDIO_RUNNING.play();
             let index = characterGraphicIndex % characterGraphicsRight.length
             currentCharacterImage = characterGraphicsRight[index];
@@ -181,6 +239,9 @@ function checkForRunning() {
         }
 
         if (isMovingLeft) {
+            isFacingRight = false;
+            isFacingLeft = true;
+            sleeping = false;
             AUDIO_RUNNING.play();
             let index = characterGraphicIndex % characterGraphicsLeft.length
             currentCharacterImage = characterGraphicsLeft[index];
@@ -193,6 +254,9 @@ function checkForRunning() {
     }, 100);
 }
 
+/**
+ * This function initializes the necesary drawings for the canvas
+ *  */
 function draw() {
     drawBackground();
     if (game_finished) {
@@ -202,29 +266,37 @@ function draw() {
         updateCharacter();
         drawChicken();
         drawBottles();
+        drawCoins();
         requestAnimationFrame(draw);
         drawEnergyBar();
         drawInformation();
+        drawCoinInformation();
         drawThrowBottle();
     }
     drawFinalBoss();
 }
 
+/**
+ * This function shows the screen when the game is finished.
+ */
 function drawFinalScreen() {
     ctx.font = '80px Bradley Hand ITC';
     let msg = 'You won!';
 
-    if(character_lost_at > 0) {
+    if (character_lost_at > 0) {
         msg = 'You lost!';
     }
     ctx.fillText(msg, 210, 200);
 }
 
+/**
+ * This function draws the final boss
+ */
 function drawFinalBoss() {
     let chicken_x = BOSS_POSITION;
     let chicken_y = 98;
-
     let bossImage = './img/boss/G1.png';
+
     if (bossDefeatedAt > 0) {
         let timePassed = new Date().getTime() - bossDefeatedAt;
         chicken_x = chicken_x + timePassed * 0.7;
@@ -260,6 +332,9 @@ function drawThrowBottle() {
     }
 }
 
+/**
+ * draw information on the canvas about the collected bottels 
+ */
 function drawInformation() {
     let base_image = new Image();
     base_image.src = './Mexicano - Sprites/6.botella/1.Marcador.png';
@@ -271,12 +346,85 @@ function drawInformation() {
     ctx.fillText('x' + collectedBottles, 45, 35);
 }
 
+/**
+ * draw information about the collected coins.
+ */
+function drawCoinInformation() {
+    let base_image = new Image();
+    base_image.src = './img/coins/Moneda1.png';
+    if (base_image.complete) {
+        ctx.drawImage(base_image, 60, -32, base_image.width * 0.4, base_image.height * 0.4);
+        ctx.globalAlpha = 1;
+    }
+
+    ctx.font = '30px Bradley Hand ITC';
+    ctx.fillText('x' + collectedCoins, 145, 35);
+}
+
+
+/**
+ * draw the bottles 
+ */
 function drawBottles() {
     for (let i = 0; i < placedBottles.length; i++) {
         let bottle_x = placedBottles[i];
         addBackgroundObject('./Mexicano - Sprites/6.botella/1.Marcador.png', bottle_x, 320, 0.2, 1);
     }
 }
+
+/**
+ * draw the coins
+ */
+function drawCoins() {
+    for (let i = 0; i < placedCoins.length; i++) {
+        let coin_x = placedCoins[i]['position_x'];
+        let coin_y = placedCoins[i]['position_y'];
+        addBackgroundObject('./img/coins/Moneda1.png', coin_x, coin_y, 0.5, 1);
+    }
+}
+
+/**
+ * Generate a list of coins.
+ */
+function createCoinList() {
+    placedCoins = [
+        placedCoin(600, 150),
+        placedCoin(700, 100),
+        placedCoin(800, 80),
+        placedCoin(900, 100),
+        placedCoin(1000, 150),
+        placedCoin(2600, 150),
+        placedCoin(2700, 100),
+        placedCoin(2800, 80),
+        placedCoin(2900, 100),
+        placedCoin(3000, 150),
+        placedCoin(3600, 150),
+        placedCoin(3700, 100),
+        placedCoin(3800, 80),
+        placedCoin(3900, 100),
+        placedCoin(4000, 150),
+        placedCoin(3600, 150),
+        placedCoin(3700, 100),
+        placedCoin(3800, 80),
+        placedCoin(3900, 100),
+        placedCoin(4000, 150),
+    ];
+}
+
+/**
+* This function generates the position of a coin.
+* 
+* 
+* @param {integer} coin_x - Position on the x-axis. 
+* @param {integer} coin_y - Positioin on the y-axis.
+*/
+function placedCoin(coin_x, coin_y) {
+    return {
+        'position_x': coin_x,
+        'position_y': coin_y,
+    }
+}
+
 
 function drawEnergyBar() {
     ctx.globalAlpha = 0.5;
@@ -289,9 +437,10 @@ function drawEnergyBar() {
     ctx.globalAlpha = 1;
 }
 
+/**
+ * 
+ */
 function drawChicken() {
-
-
     for (i = 0; i < chickens.length; i = i + 1) {
         let chicken = chickens[i];
         addBackgroundObject(chicken.img, chicken.position_x, chicken.position_y, chicken.scale, 1);
@@ -314,11 +463,11 @@ function updateCharacter() {
 
     let timePassedSinceJump = new Date().getTime() - lastJumpStarted;
     if (timePassedSinceJump < JUMP_TIME) {
-        character_y = character_y - 10;
+        character_y = character_y - 15;
     } else {
         // Check falling 
         if (character_y < 160) {
-            character_y = character_y + 10;
+            character_y = character_y + 15;
         }
     }
 
@@ -327,9 +476,13 @@ function updateCharacter() {
     };
 }
 
+/**
+ * This function draws the background.
+ */
 function drawBackground() {
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    drawSky();
     drawGround();
 
     //Draw clouds
@@ -344,6 +497,18 @@ function drawBackground() {
     addBackgroundObject('./img/background/cloud2.png', 7000 - cloudOffset, 10, 0.4, 1);
 }
 
+/**
+ * draw the sky
+ */
+function drawSky() {
+    for (let i = -1; i < 10; i++) {
+        addBackgroundObject('./img/background/sky.png', i * 1900, 0, 1, 1);
+    }
+}
+
+/**
+ * draw the ground 
+ */
 function drawGround() {
     if (isMovingRight) {
         bg_elements = bg_elements - GAME_SPEED;
@@ -374,6 +539,14 @@ function drawGround() {
     }
 }
 
+/**
+ * 
+ * @param {string} src - image path 
+ * @param {integer} offsetX - position on the x-asis
+ * @param {integer} offsetY - position on the y-asis 
+ * @param {integer} scale - scalation
+ * @param {integer} opacity - opacity
+ */
 function addBackgroundObject(src, offsetX, offsetY, scale, opacity) {
     if (opacity != undefined) {
         ctx.globalAlpha = opacity;

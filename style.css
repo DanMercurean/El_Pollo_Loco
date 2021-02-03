@@ -1,4 +1,21 @@
 body {
     font-family: "Bradley Hand ITC";
-    background-color: #cccccccc;
+    background-color: #cccc;
+}
+
+header {
+    display: flex;
+    justify-content: center;
+}
+
+.canvas_container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navigate_panel {
+    display: flex;
+    justify-content: center;
 }
