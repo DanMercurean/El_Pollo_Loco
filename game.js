@@ -7,11 +7,14 @@ let character_energy = 100;
 let final_boss_energy = 100;
 let isMovingRight = false;
 let isMovingLeft = false;
+let isJumping = false;
 let bg_elements = 0;
 let lastJumpStarted = 0;
 let currentCharacterImage = './img/pepe/I-1.png';
 let characterGraphicsRight = ['./img/pepe/W-21.png', './img/pepe/W-22.png', './img/pepe/W-23.png', './img/pepe/W-24.png', './img/pepe/W-25.png', './img/pepe/W-26.png'];
 let characterGraphicsLeft = ['./img/pepe/WL-21.png', './img/pepe/WL-22.png', './img/pepe/WL-23.png', './img/pepe/WL-24.png', './img/pepe/WL-25.png', './img/pepe/WL-26.png'];
+let characterGraphicsJumpRight = ['./img/pepe/J-31.png', './img/pepe/J-32.png', './img/pepe/J-33.png', './img/pepe/J-34.png', './img/pepe/J-35.png', './img/pepe/J-38.png', './img/pepe/J-38.png'];
+let characterGraphicsJumpLeft = ['./img/pepe/JL-31.png', './img/pepe/JL-32.png', './img/pepe/JL-33.png', './img/pepe/JL-34.png', './img/pepe/JL-35.png', './img/pepe/JL-38.png', './img/pepe/JL-39.png'];
 let characterGraphicIndex = 0;
 let bossImage = './img/boss/G5.png';
 let bossAlertGraphics = ['./img/boss/G5.png', './img/boss/G6.png', './img/boss/G7.png', './img/boss/G8.png', './img/boss/G9.png', './img/boss/G10.png', './img/boss/G11.png', './img/boss/G12.png'];
@@ -86,6 +89,7 @@ function init() {
     createChickenList();
     createCoinList();
     checkForSleep();
+    checkForJumping();
     checkForRunning();
     draw();
     calculateCloudOffset();
@@ -140,6 +144,7 @@ function checkForCollision() {
                 if ((character_y + 150) > coin_y && character_y < (coin_y + 20)) {
                     placedCoins.splice(i, 1);
                     AUDIO_COIN.play();
+                    AUDIO_COIN.currentTime = 0;
                     collectedCoins++;
                 }
             }
@@ -221,6 +226,41 @@ function checkForSleep() {
         }
 
     }, 200);
+}
+
+/**
+ * is checking for the current image if the character is jumping
+ */
+function checkForJumping() {
+    let index;
+
+  setInterval(function () {
+
+    if (isJumping && isFacingRight) {
+      if (index == 9) {
+          console.log(index);
+        isJumping = false;
+        index = 0;
+        characterGraphicIndex = 0;
+      }
+      index = characterGraphicIndex % characterGraphicsJumpRight.length;
+      currentCharacterImage = characterGraphicsJumpRight[index];
+      characterGraphicIndex = characterGraphicIndex + 1;
+    }
+
+    if (isJumping && isFacingLeft) {
+
+      if (index == 9) {
+        isJumping = false;
+        index = 0;
+        characterGraphicIndex = 0;
+      }
+      index = characterGraphicIndex % characterGraphicsJumpLeft.length;
+      currentCharacterImage = characterGraphicsJumpLeft[index];
+      characterGraphicIndex = characterGraphicIndex + 1;
+    }
+
+  }, 125);
 }
 
 /**
@@ -566,6 +606,7 @@ function addBackgroundObject(src, offsetX, offsetY, scale, opacity) {
  */
 function listenForKeys() {
     document.addEventListener("keydown", e => {
+        lastKeyPressed = new Date().getTime();
         const k = e.key;
         console.log(k);
         if (k == 'ArrowRight') {
@@ -578,6 +619,7 @@ function listenForKeys() {
         }
 
         if (k == 'd' && collectedBottles > 0) {
+            lastKeyPressed = new Date().getTime();
             let timePassed = new Date().getTime() - bottleThrowTime;
             if (timePassed > 1000) {
                 collectedBottles--;
