@@ -21,7 +21,13 @@ let imagePaths = ['./img/pepe/D-51.png', './img/pepe/D-52.png', './img/pepe/D-53
 'img/background/sky.png', './Mexicano - Sprites/6.botella/1.Marcador.png', './Mexicano - Sprites/6.botella/2.Botella_enterrada1.png', './Mexicano - Sprites/6.botella/2.Botella_enterrada2.png', 
 'grafiken/img/bg_elem_1.png', 'grafiken/img/bg_elem_2.png',
 './img/background/ground1.png', './img/background/ground2.png', './img/background/ground3.png', './Mexicano - Sprites/8.Coin/Moneda1.png', './Mexicano - Sprites/8.Coin/Moneda2.png',
-'./Mexicano - Sprites/7.Marcadores/Marcadorvida_enemy/Naranja.png', './img/coins/Moneda1.png', './img/coins/Moneda2.png'];
+'./Mexicano - Sprites/7.Marcadores/Marcadorvida_enemy/Naranja.png', './img/coins/Moneda1.png', './img/coins/Moneda2.png',
+'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_pollito/1.Paso_derecho.png',
+'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_pollito/2.Centro.png',
+'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_pollito/3.Paso_izquierdo.png',
+'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_Gallinita (estas salen por orden de la gallina gigantona)/1.Ga_paso_derecho.png', 
+'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_Gallinita (estas salen por orden de la gallina gigantona)/2-Ga_centro.png', 
+'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_Gallinita (estas salen por orden de la gallina gigantona)/3.Ga_paso izquierdo.png'];
 
 let images = [];
 

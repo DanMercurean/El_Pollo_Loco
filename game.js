@@ -38,6 +38,17 @@ let bossIsHurt = false;
 let bossIsDead = false;
 let cloudOffset = 0;
 let chickens = [];
+let currentChickenImage = 'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_pollito/1.Paso_derecho.png';
+let chickenGraphics = ['Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_pollito/1.Paso_derecho.png',
+    'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_pollito/2.Centro.png',
+    'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_pollito/3.Paso_izquierdo.png'];
+let chickenGraphicIndex = 0;
+let currentHenImage = 'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_Gallinita (estas salen por orden de la gallina gigantona)/1.Ga_paso_derecho.png';
+let hens = [];
+let hensGraphics = ['Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_Gallinita (estas salen por orden de la gallina gigantona)/1.Ga_paso_derecho.png',
+    'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_Gallinita (estas salen por orden de la gallina gigantona)/2-Ga_centro.png',
+    'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_Gallinita (estas salen por orden de la gallina gigantona)/3.Ga_paso izquierdo.png'];
+let hensGraphicIndex = 0;
 let placedBottles = [500, 1000, 1700, 2500, 2800, 3000, 3300];
 let collectedBottles = 0;
 let bottleThrowTime = 0;
@@ -87,14 +98,18 @@ function init() {
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext("2d");
     createChickenList();
+    createHensList();
+    checkForChicken();
+    checkForHens();
     createCoinList();
     checkForSleep();
-    checkForJumping();
+    requestAnimationFrame(checkForJumping);
     checkForRunning();
     draw();
     calculateCloudOffset();
     listenForKeys();
     calculateChickenPosition();
+    calculateHenPosition();
     checkForCollision();
     lastKeyPressed = new Date().getTime();
 }
@@ -122,6 +137,25 @@ function checkForCollision() {
                 }
             }
         }
+
+        // Check hen
+        for (let i = 0; i < hens.length; i++) {
+            let hen = hens[i];
+            let hen_x = hen.position_x + bg_elements;
+
+            if ((hen_x - 40) < character_x && (hen_x + 40) > character_x) {
+                if (character_y > 150) {
+                    if (character_energy > 0) {
+                        character_energy -= 10;
+                        isHurt = true;
+                    } else {
+                        character_lost_at = new Date().getTime();
+                        game_finished = true;
+                    }
+                }
+            }
+        }
+
         // Check bottle
         for (let i = 0; i < placedBottles.length; i++) {
             let bottle_x = placedBottles[i] + bg_elements;
@@ -181,18 +215,81 @@ function calculateChickenPosition() {
 
 }
 
+function calculateHenPosition() {
+
+    setInterval(function () {
+        for (let index = 0; index < hens.length; index++) {
+            let hen = hens[index];
+
+            // if (!hen.dead) {
+                hen.position_x = hen.position_x - hen.speed;
+            // }
+        }
+    }, 50);
+
+}
+
+
+/**
+ * check for the current image of the chicken.
+ */
+function checkForChicken() {
+    setInterval(function () {
+
+        let index = chickenGraphicIndex % chickenGraphics.length; //Infinte loop
+        currentChickenImage = chickenGraphics[index];
+        chickenGraphicIndex = chickenGraphicIndex + 1;
+
+    }, 125);
+}
+
+
 function createChickenList() {
     chickens = [
-        createChicken(1, 700, 322),
+        createChicken(1, 700, 330),
         createChicken(2, 1400, 330),
-        createChicken(1, 1800, 322),
-        createChicken(1, 2500, 322),
-        createChicken(1, 3000, 322),
-        createChicken(1, 3500, 322),
-        createChicken(1, 3800, 322),
+        createChicken(1, 1800, 330),
+        createChicken(1, 2500, 330),
+        createChicken(1, 3000, 330),
+        createChicken(1, 3500, 330),
+        createChicken(1, 3800, 330),
         createChicken(2, 4000, 330),
-        createChicken(1, 4500, 322),
-        createChicken(1, 4800, 322),
+        createChicken(1, 4500, 330),
+        createChicken(1, 4800, 330),
+    ];
+}
+
+function drawHen() {
+    for (let i = 0; i < hens.length; i++) {
+        let hen = hens[i];
+        let image = currentHenImage;
+
+        //   if (hen.dead) {
+        //     image = 'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_Gallinita (estas salen por orden de la gallina gigantona)/1.Ga_paso_derecho.png';
+        //   }
+
+        addBackgroundObject(image, hen.position_x, bg_elements, hen.position_y, hen.scale, 1);
+    }
+}
+
+
+
+function checkForHens() {
+    setInterval(function () {
+
+        let index = hensGraphicIndex % hensGraphics.length; //Infinite loop
+        currentHenImage = hensGraphics[index];
+        hensGraphicIndex = hensGraphicIndex + 1;
+
+    }, 125);
+}
+
+function createHensList() {
+    hens = [
+        createChicken(700),
+        createChicken(1400),
+        createChicken(2500),
+        createChicken(4200),
     ];
 }
 
@@ -233,34 +330,35 @@ function checkForSleep() {
  */
 function checkForJumping() {
     let index;
+    // setInterval( () => {
+        console.log("checkForJumping");
+        if (isJumping && isFacingRight) {
+            console.log("Is Jumping");
+            if (index == 9) {
+                console.log(index);
+                isJumping = false;
+                index = 0;
+                characterGraphicIndex = 0;
+            }
+            index = characterGraphicIndex % characterGraphicsJumpRight.length;
+            currentCharacterImage = characterGraphicsJumpRight[index];
+            characterGraphicIndex = characterGraphicIndex + 1;
+        }
 
-  setInterval(function () {
+        if (isJumping && isFacingLeft) {
 
-    if (isJumping && isFacingRight) {
-      if (index == 9) {
-          console.log(index);
-        isJumping = false;
-        index = 0;
-        characterGraphicIndex = 0;
-      }
-      index = characterGraphicIndex % characterGraphicsJumpRight.length;
-      currentCharacterImage = characterGraphicsJumpRight[index];
-      characterGraphicIndex = characterGraphicIndex + 1;
-    }
+            if (index == 9) {
+                isJumping = false;
+                index = 0;
+                characterGraphicIndex = 0;
+            }
+            index = characterGraphicIndex % characterGraphicsJumpLeft.length;
+            currentCharacterImage = characterGraphicsJumpLeft[index];
+            characterGraphicIndex = characterGraphicIndex + 1;
+        }
 
-    if (isJumping && isFacingLeft) {
-
-      if (index == 9) {
-        isJumping = false;
-        index = 0;
-        characterGraphicIndex = 0;
-      }
-      index = characterGraphicIndex % characterGraphicsJumpLeft.length;
-      currentCharacterImage = characterGraphicsJumpLeft[index];
-      characterGraphicIndex = characterGraphicIndex + 1;
-    }
-
-  }, 125);
+    // }, 300);
+    requestAnimationFrame(checkForJumping);
 }
 
 /**
@@ -305,6 +403,7 @@ function draw() {
     } else {
         updateCharacter();
         drawChicken();
+        drawHen();
         drawBottles();
         drawCoins();
         requestAnimationFrame(draw);
@@ -478,12 +577,13 @@ function drawEnergyBar() {
 }
 
 /**
- * 
+ * draw the chicken 
  */
 function drawChicken() {
     for (i = 0; i < chickens.length; i = i + 1) {
         let chicken = chickens[i];
-        addBackgroundObject(chicken.img, chicken.position_x, chicken.position_y, chicken.scale, 1);
+        let image = currentChickenImage;
+        addBackgroundObject(image, chicken.position_x, chicken.position_y, chicken.scale, 1);
     }
 }
 
