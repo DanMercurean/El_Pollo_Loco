@@ -13,8 +13,8 @@ let lastJumpStarted = 0;
 let currentCharacterImage = './img/pepe/I-1.png';
 let characterGraphicsRight = ['./img/pepe/W-21.png', './img/pepe/W-22.png', './img/pepe/W-23.png', './img/pepe/W-24.png', './img/pepe/W-25.png', './img/pepe/W-26.png'];
 let characterGraphicsLeft = ['./img/pepe/WL-21.png', './img/pepe/WL-22.png', './img/pepe/WL-23.png', './img/pepe/WL-24.png', './img/pepe/WL-25.png', './img/pepe/WL-26.png'];
-let characterGraphicsJumpRight = ['./img/pepe/J-31.png', './img/pepe/J-32.png', './img/pepe/J-33.png', './img/pepe/J-34.png', './img/pepe/J-35.png', './img/pepe/J-38.png', './img/pepe/J-38.png'];
-let characterGraphicsJumpLeft = ['./img/pepe/JL-31.png', './img/pepe/JL-32.png', './img/pepe/JL-33.png', './img/pepe/JL-34.png', './img/pepe/JL-35.png', './img/pepe/JL-38.png', './img/pepe/JL-39.png'];
+let characterGraphicsJumpRight = ['./img/pepe/J-31.png', './img/pepe/J-32.png', './img/pepe/J-33.png', './img/pepe/J-34.png', './img/pepe/J-35.png', './img/pepe/J-36.png', './img/pepe/J-37.png', './img/pepe/J-38.png', './img/pepe/J-39.png'];
+let characterGraphicsJumpLeft = ['./img/pepe/JL-31.png', './img/pepe/JL-32.png', './img/pepe/JL-33.png', './img/pepe/JL-34.png', './img/pepe/JL-35.png', './img/pepe/JL-36.png', './img/pepe/JL-37.png'];
 let characterGraphicIndex = 0;
 let bossImage = './img/boss/G5.png';
 let bossAlertGraphics = ['./img/boss/G5.png', './img/boss/G6.png', './img/boss/G7.png', './img/boss/G8.png', './img/boss/G9.png', './img/boss/G10.png', './img/boss/G11.png', './img/boss/G12.png'];
@@ -72,6 +72,12 @@ let characterGraphicsSleepLeft = ['./img/pepe/IL-11.png', './img/pepe/IL-12.png'
 let isFacingRight = true;
 let isFacingLeft = false;
 let sleeping = false;
+
+let musicIsOn = true;
+let musicIsOff = false;
+let soundIsOn = true;
+let soundIsOff = false;
+
 
 // -------- Game config 
 let JUMP_TIME = 300; // in ms
@@ -330,12 +336,9 @@ function checkForSleep() {
  */
 function checkForJumping() {
     let index;
-    // setInterval( () => {
-        console.log("checkForJumping");
+    setInterval( () => {
         if (isJumping && isFacingRight) {
-            console.log("Is Jumping");
-            if (index == 9) {
-                console.log(index);
+            if (index == 6) {
                 isJumping = false;
                 index = 0;
                 characterGraphicIndex = 0;
@@ -343,11 +346,10 @@ function checkForJumping() {
             index = characterGraphicIndex % characterGraphicsJumpRight.length;
             currentCharacterImage = characterGraphicsJumpRight[index];
             characterGraphicIndex = characterGraphicIndex + 1;
+         
         }
-
         if (isJumping && isFacingLeft) {
-
-            if (index == 9) {
+            if (index == 6) {
                 isJumping = false;
                 index = 0;
                 characterGraphicIndex = 0;
@@ -355,10 +357,9 @@ function checkForJumping() {
             index = characterGraphicIndex % characterGraphicsJumpLeft.length;
             currentCharacterImage = characterGraphicsJumpLeft[index];
             characterGraphicIndex = characterGraphicIndex + 1;
+            
         }
-
-    // }, 300);
-    requestAnimationFrame(checkForJumping);
+    }, 100);
 }
 
 /**
@@ -730,6 +731,7 @@ function listenForKeys() {
 
         let timePassedSinceJump = new Date().getTime() - lastJumpStarted;
         if (e.code == 'Space' && timePassedSinceJump > JUMP_TIME * 2) {
+            isJumping = true;
             AUDIO_JUMP.play();
             lastJumpStarted = new Date().getTime();
         }
@@ -753,3 +755,31 @@ function listenForKeys() {
         // }
     });
 }
+
+/**
+ * turn off the music.
+ */
+function turnMusicOff() {
+
+    document.addEventListener("keydown", e => {
+  
+      if (e.key == 'm' && musicIsOn) {
+        AUDIO_BACKGROUND_MUSIC.muted = true;
+  
+        setTimeout(function () {
+          musicIsOn = false;
+          musicIsOff = true;
+        }, 100);
+      }
+  
+      if (e.key == 'm' && musicIsOff) {
+        AUDIO_BACKGROUND_MUSIC.muted = false;
+  
+        setTimeout(function () {
+          musicIsOn = true;
+          musicIsOff = false;
+        }, 100);
+      }
+  
+    });
+  }
