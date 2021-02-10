@@ -16,7 +16,7 @@ let characterGraphicsLeft = ['./img/pepe/WL-21.png', './img/pepe/WL-22.png', './
 let characterGraphicsJumpRight = ['./img/pepe/J-31.png', './img/pepe/J-32.png', './img/pepe/J-33.png', './img/pepe/J-34.png', './img/pepe/J-35.png', './img/pepe/J-36.png', './img/pepe/J-37.png', './img/pepe/J-38.png', './img/pepe/J-39.png'];
 let characterGraphicsJumpLeft = ['./img/pepe/JL-31.png', './img/pepe/JL-32.png', './img/pepe/JL-33.png', './img/pepe/JL-34.png', './img/pepe/JL-35.png', './img/pepe/JL-36.png', './img/pepe/JL-37.png'];
 let characterGraphicIndex = 0;
-let bossImage = './img/boss/G5.png';
+let bossImage = './img/boss/G1.png';
 let bossAlertGraphics = ['./img/boss/G5.png', './img/boss/G6.png', './img/boss/G7.png', './img/boss/G8.png', './img/boss/G9.png', './img/boss/G10.png', './img/boss/G11.png', './img/boss/G12.png'];
 let bossWalkLeftGraphics = ['./img/boss/G1.png', './img/boss/G2.png', './img/boss/G3.png', './img/boss/G4.png'];
 let bossWalkRightGraphics = ['./img/boss/GR1.png', './img/boss/GR2.png', './img/boss/GR3.png', './img/boss/GR4.png'];
@@ -26,16 +26,19 @@ let bossHurtLeftGraphics = ['./img/boss/G21.png', './img/boss/G22.png', './img/b
 let bossHurtRightGraphics = ['./img/boss/GR21.png', './img/boss/GR22.png', './img/boss/GR23.png', './img/boss/GR21.png', './img/boss/GR22.png', './img/boss/GR23.png'];
 let bossDeadLeftGraphics = ['./img/boss/G24.png', './img/boss/G25.png', './img/boss/G26.png'];
 let bossDeadRightGraphics = ['./img/boss/GR24.png', './img/boss/GR25.png', './img/boss/GR26.png'];
-let bossEnergyGraphics = ['./img/bars/bossenergy1.png', './img/bars/bossenergy2.png', './img/bars/bossenergy3.png', './img/bars/bossenergy4.png', './img/bars/bossenergy5.png', './img/bars/bossenergy6.png'];
-let currentBossEnergyImage = './Mexicano - Sprites/7.Marcadores/Marcadorvida_enemy/Naranja.png';
+let bossEnergyGraphics = ['./img/bars/100.png', './img/bars/80.png', './img/bars/60.png', './img/bars/40.png', './img/bars/20.png', './img/bars/0.png'];
+let currentBossEnergyImage = './img/bars/100.png';
 let bossGraphicIndex = 0;
 let bossIsFacingRight = false;
 let bossIsFacingLeft = true;
 let bossIsWalking = false;
+let bossWalksRight = true;
 let bossIsAlerted = true;
 let bossIsAttacking = false;
 let bossIsHurt = false;
 let bossIsDead = false;
+let index_hurt;
+let index_attack;
 let cloudOffset = 0;
 let chickens = [];
 let currentChickenImage = 'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_pollito/1.Paso_derecho.png';
@@ -82,7 +85,8 @@ let soundIsOff = false;
 // -------- Game config 
 let JUMP_TIME = 300; // in ms
 let GAME_SPEED = 7;
-let BOSS_POSITION = 5000;
+let BOSS_POSITION_X = 5000;
+let BOSS_POSITION_Y = 98;
 let AUDIO_RUNNING = new Audio('audio/running.mp3');
 let AUDIO_JUMP = new Audio('audio/jump.mp3');
 let AUDIO_BOTTLE = new Audio('audio/bottle.mp3');
@@ -103,6 +107,11 @@ function init() {
     preloadImages();
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext("2d");
+    draw();
+}
+
+function loadGame() {
+    AUDIO_BACKGROUND_MUSIC.play();
     createChickenList();
     createHensList();
     checkForChicken();
@@ -111,13 +120,20 @@ function init() {
     checkForSleep();
     requestAnimationFrame(checkForJumping);
     checkForRunning();
-    draw();
+    checkForBoss();
     calculateCloudOffset();
     listenForKeys();
     calculateChickenPosition();
     calculateHenPosition();
     checkForCollision();
+    checkBossEnergy();
     lastKeyPressed = new Date().getTime();
+}
+/**
+ * close start-button 
+ */
+function closeStart() {
+    document.getElementById('start_button').classList.add('d-none');
 }
 
 /**
@@ -153,7 +169,7 @@ function checkForCollision() {
                 if (character_y > 150) {
                     if (character_energy > 0) {
                         character_energy -= 10;
-                        isHurt = true;
+                        //isHurt = true;
                     } else {
                         character_lost_at = new Date().getTime();
                         game_finished = true;
@@ -190,11 +206,23 @@ function checkForCollision() {
             }
         }
 
-        // Check final Boss 
-        if (thrownBottleX > BOSS_POSITION + bg_elements - 100 && thrownBottleX < BOSS_POSITION + bg_elements + 100) {
+    }, 100);
+}
+
+/**
+ * check the energy of the final boss
+ */
+function checkBossEnergy() {
+let index = 0;
+    setInterval(function () {
+        if (thrownBottleX > BOSS_POSITION_X + bg_elements - 100 && thrownBottleX < BOSS_POSITION_X + bg_elements + 100) {
             if (final_boss_energy > 0) {
                 final_boss_energy = final_boss_energy - 10;
                 AUDIO_GLASS.play();
+                bossIsHurt = true;
+                index++;
+                currentBossEnergyImage = bossEnergyGraphics[index];
+
             } else if (bossDefeatedAt == 0) {
                 bossDefeatedAt = new Date().getTime();
                 finishLevel();
@@ -203,6 +231,9 @@ function checkForCollision() {
     }, 100);
 }
 
+/**
+ * check if the level is over
+ */
 function finishLevel() {
     AUDIO_CHICKEN.play();
     setTimeout(function () {
@@ -228,7 +259,7 @@ function calculateHenPosition() {
             let hen = hens[index];
 
             // if (!hen.dead) {
-                hen.position_x = hen.position_x - hen.speed;
+            hen.position_x = hen.position_x - hen.speed;
             // }
         }
     }, 50);
@@ -254,14 +285,11 @@ function createChickenList() {
     chickens = [
         createChicken(1, 700, 330),
         createChicken(2, 1400, 330),
-        createChicken(1, 1800, 330),
         createChicken(1, 2500, 330),
         createChicken(1, 3000, 330),
         createChicken(1, 3500, 330),
         createChicken(1, 3800, 330),
         createChicken(2, 4000, 330),
-        createChicken(1, 4500, 330),
-        createChicken(1, 4800, 330),
     ];
 }
 
@@ -274,7 +302,7 @@ function drawHen() {
         //     image = 'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_Gallinita (estas salen por orden de la gallina gigantona)/1.Ga_paso_derecho.png';
         //   }
 
-        addBackgroundObject(image, hen.position_x, bg_elements, hen.position_y, hen.scale, 1);
+        addBackgroundObject(image, hen.position_x, hen.position_y, hen.scale, 1);
     }
 }
 
@@ -292,10 +320,10 @@ function checkForHens() {
 
 function createHensList() {
     hens = [
-        createChicken(700),
-        createChicken(1400),
-        createChicken(2500),
-        createChicken(4200),
+        createChicken(1, 1000, 322),
+        createChicken(1, 1800, 322),
+        createChicken(1, 4500, 322),
+        createChicken(1, 4800, 322),
     ];
 }
 
@@ -336,7 +364,7 @@ function checkForSleep() {
  */
 function checkForJumping() {
     let index;
-    setInterval( () => {
+    setInterval(() => {
         if (isJumping && isFacingRight) {
             if (index == 6) {
                 isJumping = false;
@@ -346,7 +374,7 @@ function checkForJumping() {
             index = characterGraphicIndex % characterGraphicsJumpRight.length;
             currentCharacterImage = characterGraphicsJumpRight[index];
             characterGraphicIndex = characterGraphicIndex + 1;
-         
+
         }
         if (isJumping && isFacingLeft) {
             if (index == 6) {
@@ -357,9 +385,9 @@ function checkForJumping() {
             index = characterGraphicIndex % characterGraphicsJumpLeft.length;
             currentCharacterImage = characterGraphicsJumpLeft[index];
             characterGraphicIndex = characterGraphicIndex + 1;
-            
+
         }
-    }, 100);
+    }, 125);
 }
 
 /**
@@ -421,6 +449,7 @@ function draw() {
  */
 function drawFinalScreen() {
     ctx.font = '80px Bradley Hand ITC';
+    AUDIO_BACKGROUND_MUSIC.muted = true;
     let msg = 'You won!';
 
     if (character_lost_at > 0) {
@@ -430,33 +459,231 @@ function drawFinalScreen() {
 }
 
 /**
- * This function draws the final boss
+ * draw the final boss
  */
 function drawFinalBoss() {
-    let chicken_x = BOSS_POSITION;
+    let chicken_x = BOSS_POSITION_X;
     let chicken_y = 98;
-    let bossImage = './img/boss/G1.png';
+    // let bossImage = './img/boss/G1.png';
+    //let index = 0;
+
+    if (bossIsWalking && bossIsFacingLeft) {
+        BOSS_POSITION_X = BOSS_POSITION_X - 5;
+    }
+    if (bossIsWalking && bossIsFacingRight) {
+        BOSS_POSITION_X = BOSS_POSITION_X + 5;
+    }
+
+    let difference = character_x - (BOSS_POSITION_X + bg_elements);
+
+    if (bossIsFacingLeft && difference > 500) {
+        bossIsFacingLeft = false;
+        bossIsFacingRight = true;
+    }
+    if (bossIsFacingRight && difference < -500) {
+        bossIsFacingLeft = true;
+        bossIsFacingRight = false;
+    }
 
     if (bossDefeatedAt > 0) {
         let timePassed = new Date().getTime() - bossDefeatedAt;
-        chicken_x = chicken_x + timePassed * 0.7;
-        chicken_y = chicken_y + timePassed * 0.3;
-        bossImage = './img/boss/GR26.png';
+        chicken_x = chicken_x + timePassed * 0.2;
+        chicken_y = chicken_y - timePassed * 0.15;
+        // index++;
+        // bossImage = bossDeadLeftGraphics[index];
     }
     addBackgroundObject(bossImage, chicken_x, 65, 0.3, 1);
+    bossEnergyBar();
+}
 
+/**
+ * Check for the current image of the chicken boss.
+ */
+function checkForBoss() {
+    setInterval(function () {
+        bossWalksRight = !bossWalksRight;
+        // BOSS_POSITION_X -= 15;
+    }, 500);
+
+    setInterval(function () {
+  
+      bossAlerted();
+      bossWalking();
+      bossAttacks();
+      bossHurt();
+      bossDead();
+  
+    }, 125);
+  
+  }
+  
+  /**
+   * Check for the current image if the chicken boss is alerted.
+   */
+  function bossAlerted() {
+    if (bossIsAlerted) {
+      let index = bossGraphicIndex % bossAlertGraphics.length;
+      currentBossImage = bossAlertGraphics[index];
+      bossGraphicIndex++;
+  
+      if (bg_elements < -4500) {
+        setTimeout(function () {
+          bossIsWalking = true;
+          bossIsAlerted = false;
+          bossGraphicIndex = 0;
+        }, 1000);
+      }
+    }
+  }
+
+  /**
+     * Animate boss-graphics in walking mode  
+     * @param {number} index - index of current boss-graphic
+     */
+function bossWalking(index) {
+    if (final_boss_energy == 100) {
+        index = bossGraphicIndex % bossWalkLeftGraphics.length;
+        currentBossImage = bossWalkLeftGraphics[index];
+        bossGraphicIndex++;
+    }
+}
+  
+  /**
+   * Check for the current image if the chicken boss is walking.
+   */
+//   function bossWalking() {
+//     if (bossIsWalking && bossIsFacingLeft) {
+//       let index = bossGraphicIndex % bossWalkLeftGraphics.length;
+//       currentBossImage = bossWalkLeftGraphics[index];
+//       bossGraphicIndex++;
+//     }
+  
+//     if (bossIsWalking && bossIsFacingRight) {
+//       let index = bossGraphicIndex % bossWalkRightGraphics.length;
+//       currentBossImage = bossWalkRightGraphics[index];
+//       bossGraphicIndex = bossGraphicIndex + 1;
+//     }
+//   }
+  
+  /**
+   * Check for the current image if the chicken boss is attacking.
+   */
+  function bossAttacks() {
+    if (bossIsAttacking && bossIsFacingLeft) {
+      index_attack = bossGraphicIndex % bossAttackLeftGraphics.length;
+      currentBossImage = bossAttackLeftGraphics[index_attack];
+      bossGraphicIndex = bossGraphicIndex + 1
+  
+      setTimeout(function () {
+        bossIsAttacking = false;
+        bossIsWalking = true;
+        bossGraphicIndex = 0;
+        index_attack = 0;
+      }, 1000);
+    }
+  
+    if (bossIsAttacking && bossIsFacingRight) {
+      index_attack = bossGraphicIndex % bossAttackRightGraphics.length;
+      currentBossImage = bossAttackRightGraphics[index_attack];
+      bossGraphicIndex = bossGraphicIndex + 1
+  
+      setTimeout(function () {
+        bossIsAttacking = false;
+        bossIsWalking = true;
+        bossGraphicIndex = 0;
+        index_attack = 0;
+      }, 1000);
+    }
+  }
+  
+  /**
+   * Check for the current image if the chicken boss is hurt.
+   */
+  function bossHurt() {
+    if (bossIsHurt && bossIsFacingLeft) {
+      bossIsAlerted = false;
+      bossIsWalking = false;
+      bossIsAttacking = false;
+  
+      if (index_hurt == 5) {
+        bossIsAttacking = true;
+        bossIsHurt = false;
+        index_hurt = 0;
+        bossGraphicIndex = 0;
+  
+      } else {
+        index_hurt = bossGraphicIndex % bossHurtLeftGraphics.length;
+        currentBossImage = bossHurtLeftGraphics[index_hurt];
+        bossGraphicIndex = bossGraphicIndex + 1;
+      }
+    }
+  
+    if (bossIsHurt && bossIsFacingRight) {
+      bossIsAlerted = false;
+      bossIsWalking = false;
+      bossIsAttacking = false;
+  
+      if (index_hurt == 5) {
+        bossIsAttacking = true;
+        bossIsHurt = false;
+        index_hurt = 0;
+        bossGraphicIndex = 0;
+  
+      } else {
+        index_hurt = bossGraphicIndex % bossHurtRightGraphics.length;
+        currentBossImage = bossHurtRightGraphics[index_hurt];
+        bossGraphicIndex = bossGraphicIndex + 1;
+      }
+    }
+  }
+  
+  /**
+   * Check for the current image if the chicken boss is dead.
+   */
+  function bossDead() {
+    if (bossIsDead && bossIsFacingLeft) {
+      bossIsAlerted = false;
+      bossIsWalking = false;
+      bossIsAttacking = false;
+      bossIsHurt = false;
+      let index = bossGraphicIndex % bossDeadLeftGraphics.length;
+      currentBossImage = bossDeadLeftGraphics[index];
+      bossGraphicIndex = bossGraphicIndex + 1;
+    }
+  
+    if (bossIsDead && bossIsFacingRight) {
+      bossIsAlerted = false;
+      bossIsWalking = false;
+      bossIsAttacking = false;
+      bossIsHurt = false;
+      let index = bossGraphicIndex % bossDeadRightGraphics.length;
+      currentBossImage = bossDeadRightGraphics[index];
+      bossGraphicIndex = bossGraphicIndex + 1;
+    }
+  }
+  
+
+
+
+/**
+ * energy bar of the chicken boss
+ */
+function bossEnergyBar() {
     if (bossDefeatedAt == 0) {
         ctx.globalAlpha = 0.5;
         ctx.fillStyle = "red";
-        ctx.fillRect(BOSS_POSITION - 30 + bg_elements, 95, 2 * final_boss_energy, 10);
+        ctx.fillRect(BOSS_POSITION_X - 30 + bg_elements, 95, 2 * final_boss_energy, 10);
         ctx.globalAlpha = 0.2;
 
         ctx.fillStyle = "black";
-        ctx.fillRect(BOSS_POSITION - 32 + bg_elements, 92, 205, 15);
+        ctx.fillRect(BOSS_POSITION_X - 32 + bg_elements, 92, 205, 15);
         ctx.globalAlpha = 1;
     }
 }
 
+/**
+ * draw the bottles 
+ */
 function drawThrowBottle() {
     if (bottleThrowTime) {
         let timePassed = new Date().getTime() - bottleThrowTime;
@@ -762,24 +989,24 @@ function listenForKeys() {
 function turnMusicOff() {
 
     document.addEventListener("keydown", e => {
-  
-      if (e.key == 'm' && musicIsOn) {
-        AUDIO_BACKGROUND_MUSIC.muted = true;
-  
-        setTimeout(function () {
-          musicIsOn = false;
-          musicIsOff = true;
-        }, 100);
-      }
-  
-      if (e.key == 'm' && musicIsOff) {
-        AUDIO_BACKGROUND_MUSIC.muted = false;
-  
-        setTimeout(function () {
-          musicIsOn = true;
-          musicIsOff = false;
-        }, 100);
-      }
-  
+
+        if (e.key == 'm' && musicIsOn) {
+            AUDIO_BACKGROUND_MUSIC.muted = true;
+
+            setTimeout(function () {
+                musicIsOn = false;
+                musicIsOff = true;
+            }, 100);
+        }
+
+        if (e.key == 'm' && musicIsOff) {
+            AUDIO_BACKGROUND_MUSIC.muted = false;
+
+            setTimeout(function () {
+                musicIsOn = true;
+                musicIsOff = false;
+            }, 100);
+        }
+
     });
-  }
+}

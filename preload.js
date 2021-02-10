@@ -27,7 +27,8 @@ let imagePaths = ['./img/pepe/D-51.png', './img/pepe/D-52.png', './img/pepe/D-53
 'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_pollito/3.Paso_izquierdo.png',
 'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_Gallinita (estas salen por orden de la gallina gigantona)/1.Ga_paso_derecho.png', 
 'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_Gallinita (estas salen por orden de la gallina gigantona)/2-Ga_centro.png', 
-'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_Gallinita (estas salen por orden de la gallina gigantona)/3.Ga_paso izquierdo.png'];
+'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_Gallinita (estas salen por orden de la gallina gigantona)/3.Ga_paso izquierdo.png',
+'./img/bars/100.png', './img/bars/80.png', './img/bars/60.png', './img/bars/40.png', './img/bars/20.png', './img/bars/0.png'];
 
 let images = [];
 
