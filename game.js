@@ -28,17 +28,12 @@ let bossDeadLeftGraphics = ['./img/boss/G24.png', './img/boss/G25.png', './img/b
 let bossDeadRightGraphics = ['./img/boss/GR24.png', './img/boss/GR25.png', './img/boss/GR26.png'];
 let bossEnergyGraphics = ['./img/bars/100.png', './img/bars/80.png', './img/bars/60.png', './img/bars/40.png', './img/bars/20.png', './img/bars/0.png'];
 let currentBossEnergyImage = './img/bars/100.png';
+let currentBossIndex = 0;
+let updateIntervals = [];
+let bossTurning = false;
 let bossGraphicIndex = 0;
-let bossIsFacingRight = false;
-let bossIsFacingLeft = true;
-let bossIsWalking = false;
-let bossWalksRight = true;
-let bossIsAlerted = true;
-let bossIsAttacking = false;
 let bossIsHurt = false;
 let bossIsDead = false;
-let index_hurt;
-let index_attack;
 let cloudOffset = 0;
 let chickens = [];
 let currentChickenImage = 'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_pollito/1.Paso_derecho.png';
@@ -83,10 +78,10 @@ let soundIsOff = false;
 
 
 // -------- Game config 
-let JUMP_TIME = 300; // in ms
+let JUMP_TIME = 350; // in ms
 let GAME_SPEED = 7;
 let BOSS_POSITION_X = 5000;
-let BOSS_POSITION_Y = 98;
+let BOSS_POSITION_Y = 110;
 let AUDIO_RUNNING = new Audio('audio/running.mp3');
 let AUDIO_JUMP = new Audio('audio/jump.mp3');
 let AUDIO_BOTTLE = new Audio('audio/bottle.mp3');
@@ -111,6 +106,7 @@ function init() {
 }
 
 function loadGame() {
+    console.log("LOAD GAME");
     AUDIO_BACKGROUND_MUSIC.play();
     createChickenList();
     createHensList();
@@ -120,15 +116,16 @@ function loadGame() {
     checkForSleep();
     requestAnimationFrame(checkForJumping);
     checkForRunning();
-    checkForBoss();
     calculateCloudOffset();
     listenForKeys();
     calculateChickenPosition();
     calculateHenPosition();
     checkForCollision();
     checkBossEnergy();
+    calculateBossPosition();
     lastKeyPressed = new Date().getTime();
 }
+
 /**
  * close start-button 
  */
@@ -206,28 +203,6 @@ function checkForCollision() {
             }
         }
 
-    }, 100);
-}
-
-/**
- * check the energy of the final boss
- */
-function checkBossEnergy() {
-let index = 0;
-    setInterval(function () {
-        if (thrownBottleX > BOSS_POSITION_X + bg_elements - 100 && thrownBottleX < BOSS_POSITION_X + bg_elements + 100) {
-            if (final_boss_energy > 0) {
-                final_boss_energy = final_boss_energy - 10;
-                AUDIO_GLASS.play();
-                bossIsHurt = true;
-                index++;
-                currentBossEnergyImage = bossEnergyGraphics[index];
-
-            } else if (bossDefeatedAt == 0) {
-                bossDefeatedAt = new Date().getTime();
-                finishLevel();
-            }
-        }
     }, 100);
 }
 
@@ -310,7 +285,6 @@ function drawHen() {
 
 function checkForHens() {
     setInterval(function () {
-
         let index = hensGraphicIndex % hensGraphics.length; //Infinite loop
         currentHenImage = hensGraphics[index];
         hensGraphicIndex = hensGraphicIndex + 1;
@@ -440,6 +414,7 @@ function draw() {
         drawInformation();
         drawCoinInformation();
         drawThrowBottle();
+        changeBossAnimations();
     }
     drawFinalBoss();
 }
@@ -456,229 +431,6 @@ function drawFinalScreen() {
         msg = 'You lost!';
     }
     ctx.fillText(msg, 210, 200);
-}
-
-/**
- * draw the final boss
- */
-function drawFinalBoss() {
-    let chicken_x = BOSS_POSITION_X;
-    let chicken_y = 98;
-    // let bossImage = './img/boss/G1.png';
-    //let index = 0;
-
-    if (bossIsWalking && bossIsFacingLeft) {
-        BOSS_POSITION_X = BOSS_POSITION_X - 5;
-    }
-    if (bossIsWalking && bossIsFacingRight) {
-        BOSS_POSITION_X = BOSS_POSITION_X + 5;
-    }
-
-    let difference = character_x - (BOSS_POSITION_X + bg_elements);
-
-    if (bossIsFacingLeft && difference > 500) {
-        bossIsFacingLeft = false;
-        bossIsFacingRight = true;
-    }
-    if (bossIsFacingRight && difference < -500) {
-        bossIsFacingLeft = true;
-        bossIsFacingRight = false;
-    }
-
-    if (bossDefeatedAt > 0) {
-        let timePassed = new Date().getTime() - bossDefeatedAt;
-        chicken_x = chicken_x + timePassed * 0.2;
-        chicken_y = chicken_y - timePassed * 0.15;
-        // index++;
-        // bossImage = bossDeadLeftGraphics[index];
-    }
-    addBackgroundObject(bossImage, chicken_x, 65, 0.3, 1);
-    bossEnergyBar();
-}
-
-/**
- * Check for the current image of the chicken boss.
- */
-function checkForBoss() {
-    setInterval(function () {
-        bossWalksRight = !bossWalksRight;
-        // BOSS_POSITION_X -= 15;
-    }, 500);
-
-    setInterval(function () {
-  
-      bossAlerted();
-      bossWalking();
-      bossAttacks();
-      bossHurt();
-      bossDead();
-  
-    }, 125);
-  
-  }
-  
-  /**
-   * Check for the current image if the chicken boss is alerted.
-   */
-  function bossAlerted() {
-    if (bossIsAlerted) {
-      let index = bossGraphicIndex % bossAlertGraphics.length;
-      currentBossImage = bossAlertGraphics[index];
-      bossGraphicIndex++;
-  
-      if (bg_elements < -4500) {
-        setTimeout(function () {
-          bossIsWalking = true;
-          bossIsAlerted = false;
-          bossGraphicIndex = 0;
-        }, 1000);
-      }
-    }
-  }
-
-  /**
-     * Animate boss-graphics in walking mode  
-     * @param {number} index - index of current boss-graphic
-     */
-function bossWalking(index) {
-    if (final_boss_energy == 100) {
-        index = bossGraphicIndex % bossWalkLeftGraphics.length;
-        currentBossImage = bossWalkLeftGraphics[index];
-        bossGraphicIndex++;
-    }
-}
-  
-  /**
-   * Check for the current image if the chicken boss is walking.
-   */
-//   function bossWalking() {
-//     if (bossIsWalking && bossIsFacingLeft) {
-//       let index = bossGraphicIndex % bossWalkLeftGraphics.length;
-//       currentBossImage = bossWalkLeftGraphics[index];
-//       bossGraphicIndex++;
-//     }
-  
-//     if (bossIsWalking && bossIsFacingRight) {
-//       let index = bossGraphicIndex % bossWalkRightGraphics.length;
-//       currentBossImage = bossWalkRightGraphics[index];
-//       bossGraphicIndex = bossGraphicIndex + 1;
-//     }
-//   }
-  
-  /**
-   * Check for the current image if the chicken boss is attacking.
-   */
-  function bossAttacks() {
-    if (bossIsAttacking && bossIsFacingLeft) {
-      index_attack = bossGraphicIndex % bossAttackLeftGraphics.length;
-      currentBossImage = bossAttackLeftGraphics[index_attack];
-      bossGraphicIndex = bossGraphicIndex + 1
-  
-      setTimeout(function () {
-        bossIsAttacking = false;
-        bossIsWalking = true;
-        bossGraphicIndex = 0;
-        index_attack = 0;
-      }, 1000);
-    }
-  
-    if (bossIsAttacking && bossIsFacingRight) {
-      index_attack = bossGraphicIndex % bossAttackRightGraphics.length;
-      currentBossImage = bossAttackRightGraphics[index_attack];
-      bossGraphicIndex = bossGraphicIndex + 1
-  
-      setTimeout(function () {
-        bossIsAttacking = false;
-        bossIsWalking = true;
-        bossGraphicIndex = 0;
-        index_attack = 0;
-      }, 1000);
-    }
-  }
-  
-  /**
-   * Check for the current image if the chicken boss is hurt.
-   */
-  function bossHurt() {
-    if (bossIsHurt && bossIsFacingLeft) {
-      bossIsAlerted = false;
-      bossIsWalking = false;
-      bossIsAttacking = false;
-  
-      if (index_hurt == 5) {
-        bossIsAttacking = true;
-        bossIsHurt = false;
-        index_hurt = 0;
-        bossGraphicIndex = 0;
-  
-      } else {
-        index_hurt = bossGraphicIndex % bossHurtLeftGraphics.length;
-        currentBossImage = bossHurtLeftGraphics[index_hurt];
-        bossGraphicIndex = bossGraphicIndex + 1;
-      }
-    }
-  
-    if (bossIsHurt && bossIsFacingRight) {
-      bossIsAlerted = false;
-      bossIsWalking = false;
-      bossIsAttacking = false;
-  
-      if (index_hurt == 5) {
-        bossIsAttacking = true;
-        bossIsHurt = false;
-        index_hurt = 0;
-        bossGraphicIndex = 0;
-  
-      } else {
-        index_hurt = bossGraphicIndex % bossHurtRightGraphics.length;
-        currentBossImage = bossHurtRightGraphics[index_hurt];
-        bossGraphicIndex = bossGraphicIndex + 1;
-      }
-    }
-  }
-  
-  /**
-   * Check for the current image if the chicken boss is dead.
-   */
-  function bossDead() {
-    if (bossIsDead && bossIsFacingLeft) {
-      bossIsAlerted = false;
-      bossIsWalking = false;
-      bossIsAttacking = false;
-      bossIsHurt = false;
-      let index = bossGraphicIndex % bossDeadLeftGraphics.length;
-      currentBossImage = bossDeadLeftGraphics[index];
-      bossGraphicIndex = bossGraphicIndex + 1;
-    }
-  
-    if (bossIsDead && bossIsFacingRight) {
-      bossIsAlerted = false;
-      bossIsWalking = false;
-      bossIsAttacking = false;
-      bossIsHurt = false;
-      let index = bossGraphicIndex % bossDeadRightGraphics.length;
-      currentBossImage = bossDeadRightGraphics[index];
-      bossGraphicIndex = bossGraphicIndex + 1;
-    }
-  }
-  
-
-
-
-/**
- * energy bar of the chicken boss
- */
-function bossEnergyBar() {
-    if (bossDefeatedAt == 0) {
-        ctx.globalAlpha = 0.5;
-        ctx.fillStyle = "red";
-        ctx.fillRect(BOSS_POSITION_X - 30 + bg_elements, 95, 2 * final_boss_energy, 10);
-        ctx.globalAlpha = 0.2;
-
-        ctx.fillStyle = "black";
-        ctx.fillRect(BOSS_POSITION_X - 32 + bg_elements, 92, 205, 15);
-        ctx.globalAlpha = 1;
-    }
 }
 
 /**
