@@ -7,7 +7,7 @@ function checkBossEnergy() {
     setInterval(function () {
         if (thrownBottleX > BOSS_POSITION_X + bg_elements - 100 && thrownBottleX < BOSS_POSITION_X + bg_elements + 100) {
             if (final_boss_energy > 0) {
-                final_boss_energy = final_boss_energy - 13;
+                final_boss_energy = final_boss_energy - 12;
                 AUDIO_GLASS.play();
                 bossIsHurt = true;
                 currentBossEnergyImage = bossEnergyGraphics[index];
@@ -15,6 +15,7 @@ function checkBossEnergy() {
 
             } else if (bossDefeatedAt == 0) {
                 bossDefeatedAt = new Date().getTime();
+                bossIsDead = true;
                 finishLevel();
             }
         }
@@ -28,7 +29,7 @@ function drawFinalBoss() {
     let energyBarImage = resolveEndbossEnergyImage();
 
     addBackgroundObject(bossImage, BOSS_POSITION_X, BOSS_POSITION_Y, 0.26, 1);
-    addBackgroundObject(energyBarImage, BOSS_POSITION_X, BOSS_POSITION_Y - 30, 0.26, 1);
+    addBackgroundObject(energyBarImage, BOSS_POSITION_X, BOSS_POSITION_Y - 10, 0.26, 1);
 
 }
 
@@ -128,8 +129,8 @@ function animateHurtBoss(index) {
 function animateBossDefeat(index) {
     if (bossIsDead == true) {
         let timePassed = new Date().getTime() - bossDefeatedAt;
-        BOSS_POSITION_X += timePassed / 24;
-        BOSS_POSITION_Y -= timePassed / 50;
+        BOSS_POSITION_X += timePassed * 0.30;
+        BOSS_POSITION_Y -= timePassed * 0.8;
         index = currentBossIndex % bossDeadLeftGraphics.length;
         bossImage = bossDeadLeftGraphics[index];
     }

@@ -47,7 +47,7 @@ let hensGraphics = ['Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_Gal
     'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_Gallinita (estas salen por orden de la gallina gigantona)/2-Ga_centro.png',
     'Mexicano - Sprites/3.Secuencias_Enemy_b+ísico/Versi+-n_Gallinita (estas salen por orden de la gallina gigantona)/3.Ga_paso izquierdo.png'];
 let hensGraphicIndex = 0;
-let placedBottles = [500, 1000, 1700, 2500, 2800, 3000, 3300];
+let placedBottles = [500, 700, 1000, 1500, 1700, 2000, 2500, 2800, 3000, 3300];
 let collectedBottles = 0;
 let bottleThrowTime = 0;
 let thrownBottleX = 0;
@@ -114,7 +114,7 @@ function loadGame() {
     checkForHens();
     createCoinList();
     checkForSleep();
-    requestAnimationFrame(checkForJumping);
+    setInterval(checkForJumping(), 125);
     checkForRunning();
     calculateCloudOffset();
     listenForKeys();
@@ -147,7 +147,7 @@ function checkForCollision() {
             if ((chicken_x - 40) < character_x && (chicken_x + 40) > character_x) {
                 if (character_y > 150) {
                     if (character_energy > 0) {
-                        character_energy -= 10;
+                        character_energy -= 5;
                     } else {
                         character_lost_at = new Date().getTime();
                         game_finished = true;
@@ -165,7 +165,7 @@ function checkForCollision() {
             if ((hen_x - 40) < character_x && (hen_x + 40) > character_x) {
                 if (character_y > 150) {
                     if (character_energy > 0) {
-                        character_energy -= 10;
+                        character_energy -= 5;
                         //isHurt = true;
                     } else {
                         character_lost_at = new Date().getTime();
