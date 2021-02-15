@@ -40,3 +40,56 @@ header {
     text-shadow: 0px 1px 0px #154682;
     margin: 8px;
 }
+
+.canvas_container img {
+    position: absolute;
+    width: 720;
+    height: 480;
+}
+
+.mobile-instructions {
+    display: none;
+    position: absolute;
+    z-index: 5;
+}
+
+/* Smartphones and tablets (Landscape-View) */
+
+@media (max-width: 830px) {
+    body {
+        margin: 0;
+        overflow: hidden;
+    }
+    h1 {
+        display: none;
+    }
+    .rotate {
+        transform: rotate(90deg);
+        transform-origin: bottom left;
+        position: absolute;
+        top: -100vw;
+        left: 0;
+        height: 100vw;
+        width: 99.9vh;
+    }
+    .mobile-instructions {
+        display: flex;
+        width: 60vw;
+        opacity: 0.8;
+    }
+    #canvas {
+        width: 100%;
+        height: 100%;
+    }
+    .canvas_container {
+        width: 100%;
+        height: 100%;
+    }
+    .canvas_container img {
+        width: 100%;
+        height: 100%;
+    }
+    .description {
+        display: none;
+    }
+}

@@ -129,8 +129,8 @@ function animateHurtBoss(index) {
 function animateBossDefeat(index) {
     if (bossIsDead == true) {
         let timePassed = new Date().getTime() - bossDefeatedAt;
-        BOSS_POSITION_X += timePassed * 0.30;
-        BOSS_POSITION_Y -= timePassed * 0.8;
+        BOSS_POSITION_X += timePassed * 0.20;
+        BOSS_POSITION_Y -= timePassed * 0.54;
         index = currentBossIndex % bossDeadLeftGraphics.length;
         bossImage = bossDeadLeftGraphics[index];
     }

@@ -76,6 +76,12 @@ let musicIsOff = false;
 let soundIsOn = true;
 let soundIsOff = false;
 
+// touch_processing.js variables
+let touchpointX;
+let Y_touchpoints = new Array();
+let ongoingTouches = new Array();
+let jumpOnMobile = false;
+let clickTimer = null;
 
 // -------- Game config 
 let JUMP_TIME = 350; // in ms
@@ -131,6 +137,7 @@ function loadGame() {
  */
 function closeStart() {
     document.getElementById('start_button').classList.add('d-none');
+    document.getElementById('start_img').classList.add('d-none');
 }
 
 /**
@@ -423,6 +430,7 @@ function draw() {
  * This function shows the screen when the game is finished.
  */
 function drawFinalScreen() {
+    document.getElementById('restart-button').classList.remove('d-none');
     ctx.font = '80px Bradley Hand ITC';
     AUDIO_BACKGROUND_MUSIC.muted = true;
     let msg = 'You won!';
