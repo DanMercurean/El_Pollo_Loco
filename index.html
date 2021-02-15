@@ -21,16 +21,24 @@
         <img src="img/background/mobile-description.PNG" class="mobile-instructions" id="mobile-instructions">
         <!-- Canvas Box -->
         <div class="canvas_container" id="canvasContainer">
-            <canvas id="canvas" width="720" height="480"></canvas>
-            <img id="start_img" src="Mexicano - Sprites/9.Intro _ Outro Image/Start Screen/Opci+-n 1.png">
+            <canvas id="canvas" width="865" height="480"></canvas>
+            <img class="start-img" id="start_img" src="Mexicano - Sprites/9.Intro _ Outro Image/Start Screen/Opci+-n 1.png">
             <button id="start_button" class="start_button" onclick="loadGame(); closeStart()">Start</button>
             <button id="restart-button" class="start_button d-none" onclick="window.location.reload()">Restart</button>
-        </div>
-    </div>
-    <!--Navigate panel-->
-    <h3 class="navigate_panel">Arrows Left & Right = Walk | Spacebar = Jump | D = Throw Tabasco | M = Music On & Off | R
-        = Restart</h3>
 
+            <img id="fullscreen-icon" class="fullscreen-icon" src="img/bars/fullscreen-enter-24.ico"
+                onclick="openFullscreen()">
+            <img id="exit-fullscreen-icon" class="exit-fullscreen-icon d-none" src="img/bars/fullscreen-exit-24.ico"
+                onclick="closeFullscreen()">
+        </div>
+
+    </div>
+    <div>
+        <!--Navigate panel-->
+        <h3 class="navigate_panel">Arrows Left & Right = Walk | Spacebar = Jump | D = Throw Tabasco | M = Music On & Off
+            | R
+            = Restart</h3>
+    </div>
 </body>
 
 </html>

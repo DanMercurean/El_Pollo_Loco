@@ -26,6 +26,7 @@ header {
 
 .start_button {
     position: absolute;
+    top: 10px;
     font-size: 2.5em;
     box-shadow: inset 0px 1px 0px 0px #54a3f7;
     background: linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
@@ -41,10 +42,11 @@ header {
     margin: 8px;
 }
 
-.canvas_container img {
+.start-img {
     position: absolute;
-    width: 720;
-    height: 480;
+    width: 875px;
+    height: 480px;
+    object-fit: cover;
 }
 
 .mobile-instructions {
@@ -52,6 +54,27 @@ header {
     position: absolute;
     z-index: 5;
 }
+
+.fullscreen-icon {
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    padding-left: 828px;
+    bottom: 8px;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.exit-fullscreen-icon {
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    cursor: pointer;
+    z-index: 2;
+}
+
 
 /* Smartphones and tablets (Landscape-View) */
 
@@ -85,7 +108,7 @@ header {
         width: 100%;
         height: 100%;
     }
-    .canvas_container img {
+    .start-img {
         width: 100%;
         height: 100%;
     }

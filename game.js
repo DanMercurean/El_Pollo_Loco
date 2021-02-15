@@ -96,6 +96,7 @@ let AUDIO_THROW = new Audio('audio/throw.mp3');
 let AUDIO_CHICKEN = new Audio('audio/chicken.mp3');
 let AUDIO_GLASS = new Audio('audio/glass.mp3');
 let AUDIO_WIN = new Audio('audio/win.mp3');
+let AUDIO_LOST = new Audio('audio/gameOver.mp3');
 let AUDIO_BACKGROUND_MUSIC = new Audio('audio/music.mp3');
 AUDIO_BACKGROUND_MUSIC.loop = true;
 AUDIO_BACKGROUND_MUSIC.volume = 0.2;
@@ -431,12 +432,13 @@ function draw() {
  */
 function drawFinalScreen() {
     document.getElementById('restart-button').classList.remove('d-none');
-    ctx.font = '80px Bradley Hand ITC';
+    ctx.font = '120px Bradley Hand ITC';
     AUDIO_BACKGROUND_MUSIC.muted = true;
     let msg = 'You won!';
 
     if (character_lost_at > 0) {
         msg = 'You lost!';
+        AUDIO_LOST.play();
     }
     ctx.fillText(msg, 210, 200);
 }
@@ -661,9 +663,9 @@ function drawGround() {
     ctx.fillRect(0, 375, canvas.width, canvas.height - 375);
 
     for (let i = -1; i < 10; i++) {
-        addBackgroundObject('./img/background/ground3.png', i * (canvas.width + 1417), -200, 0.56, 1);
-        addBackgroundObject('./img/background/ground2.png', i * (canvas.width + 1417), -100, 0.56, 1);
-        addBackgroundObject('./img/background/ground1.png', i * (canvas.width + 1417), -125, 0.56, 1);
+        addBackgroundObject('./img/background/ground3.png', i * (canvas.width + 1280), -200, 0.56, 1);
+        addBackgroundObject('./img/background/ground2.png', i * (canvas.width + 1280), -100, 0.56, 1);
+        addBackgroundObject('./img/background/ground1.png', i * (canvas.width + 1280), -125, 0.56, 1);
     }
 }
 
@@ -770,3 +772,37 @@ function turnMusicOff() {
 
     });
 }
+
+/**
+ * open the fullscreen
+ */
+function openFullscreen() {
+    document.getElementById('fullscreen-icon').classList.add('d-none');
+    document.getElementById('exit-fullscreen-icon').classList.remove('d-none');
+  
+    if (canvasContainer.requestFullscreen) {
+      canvasContainer.requestFullscreen();
+    }
+    else if (canvasContainer.webkitRequestFullscreen) { /* Safari */
+      canvasContainer.webkitRequestFullscreen();
+    } else if (canvasContainer.msRequestFullscreen) { /* IE11 */
+      canvasContainer.msRequestFullscreen();
+    }
+  
+  }
+  
+  /**
+   * This function closes the fullscreen.
+   */
+  function closeFullscreen() {
+    document.getElementById('fullscreen-icon').classList.remove('d-none');
+    document.getElementById('exit-fullscreen-icon').classList.add('d-none');
+  
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) { /* Safari */
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) { /* IE11 */
+      document.msExitFullscreen();
+    }
+  }
