@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: finalBoss.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: finalBoss.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * check the energy of the final boss
+ */
+function checkBossEnergy() {
+    let index = 0;
+
+    setInterval(function () {
+        if (thrownBottleX > BOSS_POSITION_X + bg_elements - 100 &amp;&amp; thrownBottleX &lt; BOSS_POSITION_X + bg_elements + 100) {
+            if (final_boss_energy > 0) {
+                final_boss_energy = final_boss_energy - 12;
+                AUDIO_GLASS.play();
+                bossIsHurt = true;
+                currentBossEnergyImage = bossEnergyGraphics[index];
+                index++;
+
+            } else if (bossDefeatedAt == 0) {
+                bossDefeatedAt = new Date().getTime();
+                bossIsDead = true;
+                finishLevel();
+            }
+        }
+    }, 100);
+}
+
+// /**
+//  * draw the final boss
+//  */
+function drawFinalBoss() {
+    let energyBarImage = resolveEndbossEnergyImage();
+
+    addBackgroundObject(bossImage, BOSS_POSITION_X, BOSS_POSITION_Y, 0.26, 1);
+    addBackgroundObject(energyBarImage, BOSS_POSITION_X, BOSS_POSITION_Y - 10, 0.26, 1);
+
+}
+
+/**
+* Returns image 0, 1, 2, 3.png depending on the energy "endboss_energy"
+*/
+function resolveEndbossEnergyImage() {
+    if (final_boss_energy &lt; 0) {
+        return bossEnergyGraphics[5];
+    } else if (final_boss_energy &lt; 25) {
+        return bossEnergyGraphics[3];
+    } else if (final_boss_energy &lt; 50) {
+        return bossEnergyGraphics[2];
+    } else if (final_boss_energy &lt; 75) {
+        return bossEnergyGraphics[1];
+    } else {
+        return bossEnergyGraphics[0];
+    }
+}
+
+
+function calculateBossPosition() {
+    let updateBossInterval = setInterval(() => {
+        updateBossMovements();
+        currentBossIndex++;
+    }, 70);
+    updateIntervals.push(updateBossInterval);
+}
+
+function updateBossMovements() {
+    if (final_boss_energy == 100) {
+        // if boss enery is intact, he is moving around his initial spot
+        calculateWalkingBoss();
+    } else if (final_boss_energy &lt; 100) {
+        // if boss_energy is reduced, he will attack
+        BOSS_POSITION_X -= 15;
+    } else if (final_boss_energy &lt; 60) {
+        // if boss_energy is reduced, he will attack
+        BOSS_POSITION_X -= 20;
+    }
+}
+
+function calculateWalkingBoss() {
+    bossWalkingForward();
+    bossWalkingBackward();
+}
+
+function bossWalkingForward() {
+    if (BOSS_POSITION_X > 4100 &amp;&amp; !bossTurning) {
+        BOSS_POSITION_X -= 10;
+    }
+    if (BOSS_POSITION_X &lt;= 4100) {
+        bossTurning = true;
+    }
+}
+
+function bossWalkingBackward() {
+    if (BOSS_POSITION_X &lt;= 4300 &amp;&amp; bossTurning) {
+        BOSS_POSITION_X += 10;
+    }
+    if (BOSS_POSITION_X >= 4300) {
+        bossTurning = false;
+    }
+}
+
+function changeBossAnimations() {
+    let index;
+    setInterval(() => {
+        animateWalkingBoss(index);
+        animateAttackingBoss(index);
+        animateHurtBoss(index);
+        animateBossDefeat(index);
+    }, 125);
+}
+
+function animateWalkingBoss(index) {
+    if (final_boss_energy &lt;= 100) {
+        index = currentBossIndex % bossWalkLeftGraphics.length;
+        bossImage = bossWalkLeftGraphics[index];
+    }
+}
+
+function animateAttackingBoss(index) {
+    if (final_boss_energy &lt;= 60 &amp;&amp; final_boss_energy > 0) {
+        index = currentBossIndex % bossAttackLeftGraphics.length;
+        bossImage = bossAttackLeftGraphics[index];
+    }
+}
+
+function animateHurtBoss(index) {
+    if (bossIsHurt) {
+        index = currentBossIndex % bossHurtLeftGraphics.length;
+        bossImage = bossHurtLeftGraphics[index];
+    }
+}
+
+function animateBossDefeat(index) {
+    if (bossIsDead == true) {
+        let timePassed = new Date().getTime() - bossDefeatedAt;
+        BOSS_POSITION_X += timePassed * 0.2;
+        BOSS_POSITION_Y -= timePassed * 0.19;
+        index = currentBossIndex % bossDeadLeftGraphics.length;
+        bossImage = bossDeadLeftGraphics[index];
+    }
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addBackgroundObject">addBackgroundObject</a></li><li><a href="global.html#changeTouchpointRef">changeTouchpointRef</a></li><li><a href="global.html#checkBackgroundImageCache">checkBackgroundImageCache</a></li><li><a href="global.html#checkBossEnergy">checkBossEnergy</a></li><li><a href="global.html#checkForChicken">checkForChicken</a></li><li><a href="global.html#checkForCollision">checkForCollision</a></li><li><a href="global.html#checkForJumping">checkForJumping</a></li><li><a href="global.html#checkForRunning">checkForRunning</a></li><li><a href="global.html#checkForSleep">checkForSleep</a></li><li><a href="global.html#closeFullscreen">closeFullscreen</a></li><li><a href="global.html#closeStart">closeStart</a></li><li><a href="global.html#createCoinList">createCoinList</a></li><li><a href="global.html#detectMovingDirection">detectMovingDirection</a></li><li><a href="global.html#draw">draw</a></li><li><a href="global.html#drawBackground">drawBackground</a></li><li><a href="global.html#drawBottles">drawBottles</a></li><li><a href="global.html#drawChicken">drawChicken</a></li><li><a href="global.html#drawCoinInformation">drawCoinInformation</a></li><li><a href="global.html#drawCoins">drawCoins</a></li><li><a href="global.html#drawFinalScreen">drawFinalScreen</a></li><li><a href="global.html#drawGround">drawGround</a></li><li><a href="global.html#drawInformation">drawInformation</a></li><li><a href="global.html#drawSky">drawSky</a></li><li><a href="global.html#drawThrowBottle">drawThrowBottle</a></li><li><a href="global.html#finishLevel">finishLevel</a></li><li><a href="global.html#handleEnd">handleEnd</a></li><li><a href="global.html#handleMove">handleMove</a></li><li><a href="global.html#handleStart">handleStart</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#listenForKeys">listenForKeys</a></li><li><a href="global.html#moveOnMobile">moveOnMobile</a></li><li><a href="global.html#openFullscreen">openFullscreen</a></li><li><a href="global.html#placedCoin">placedCoin</a></li><li><a href="global.html#preloadImages">preloadImages</a></li><li><a href="global.html#resolveEndbossEnergyImage">resolveEndbossEnergyImage</a></li><li><a href="global.html#startupMobileListeners">startupMobileListeners</a></li><li><a href="global.html#touchStart">touchStart</a></li><li><a href="global.html#triggerJump">triggerJump</a></li><li><a href="global.html#turnMusicOff">turnMusicOff</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Sun Mar 14 2021 21:59:46 GMT+0100 (Mitteleuropäische Normalzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
